@@ -26,12 +26,18 @@ def run():
             # Breche ab
             break
 
+    # Löse das Kamerasignal
+    video_cap.release()
+
+    # Zerstöre alle Fenster
+    cv2.destroyAllWindows()
+
 
 # MAIN
 if __name__ == "__main__":
     
     video_cap = cv2.VideoCapture(0)
-    #run()
-
+    run()
+    exit()
     i = pyqrcode.create("test")
     print(i.terminal())
