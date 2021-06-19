@@ -67,3 +67,8 @@ def mix(color1: tuple[int, int, int], color2: tuple[int, int, int]) -> tuple[int
         result[i] = (color1[i] + color2[i]) // 2
 
     return result[0], result[1], result[2]
+
+# RGB Color to BGR Color
+def rgb_to_bgr(color_rgb: tuple[int, int, int]) -> tuple[int, int, int]:
+
+    return color_rgb[2], color_rgb[1], color_rgb[0]

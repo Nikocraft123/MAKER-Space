@@ -1,8 +1,9 @@
 # IMPORTS
-from pyzbar import pyzbar
 import cv2 as cv
 import pygame as pg
+
 import color
+import utils
 
 
 # CLASSES
@@ -13,12 +14,16 @@ class Application:
     # CONSTRUCTOR
     def __init__(self):
 
-        # Definiere App Titel
+        # Definiere Fenster Titel
         self.title = "MAKER Space - Race Video Analyse"
 
-        # Definiere App Größe
+        # Definiere Fenster Größe
         self.width = 900
         self.height = 700
+
+        # Definiere Fenster Mindestgröße
+        self.min_width = 850
+        self.min_height = 600
 
         # Definiere Kamerasignal
         self.video_cap = cv.VideoCapture(0, cv.CAP_DSHOW)
@@ -33,7 +38,7 @@ class Application:
     # METHODS
 
     # Run
-    def run(self):
+    def run(self) -> None:
 
         # Definiere Fenster
         self.screen = pg.display.set_mode((self.width, self.height), pg.RESIZABLE)
@@ -42,8 +47,8 @@ class Application:
         # App Routine
         while self.running:
 
-            # Aktualisiere Frame
-            self.update_frame()
+            # Aktualisiere Kamera Frame
+            self.update_cam_frame()
 
             # Aktualisiere Fenster Größe
             self.update_window_size()
@@ -54,26 +59,31 @@ class Application:
             # Behandle Events
             self.handel_events()
 
-        # Löse das Kamerasignal
-        self.video_cap.release()
-
         # Beende Pygame
         pg.quit()
 
+        # Löse das Kamerasignal
+        self.video_cap.release()
+
     # Aktualisiere Fenster Inhalt
-    def update_screen(self):
+    def update_screen(self) -> None:
 
         # Setze den Hintergrund auf Türkis
-        self.screen.fill(color.AQUA)
+        self.screen.fill(color.GRAY)
 
-        # Zeichne Frame auf dem Fenster (In der Mitte)
-        self.screen.blit(self.pg_frame, ((self.screen.get_width() - self.pg_frame.get_width()) // 2, (self.screen.get_height() - self.pg_frame.get_height()) // 2))
+        # Zeichne Kamera Frame auf dem Fenster
+        #self.screen.blit(self.pg_frame, ((self.screen.get_width() - self.pg_frame.get_width()) // 2, (self.screen.get_height() - self.pg_frame.get_height()) // 2))
+        pg.draw.rect(self.screen, color.BLUE, (10, 10, 10 + self.pg_frame.get_width(), 10 + self.pg_frame.get_height()))
+        self.screen.blit(self.pg_frame, (15, 15))
+
+        # Zeichne Infoleiste
+        pg.draw.rect(self.screen, color.YELLOW, (self.pg_frame.get_width() + 100, 10, self.screen.get_width() - self.pg_frame.get_width() - 110, self.screen.get_height() - 20))
 
         # Aktualisiere Fenster
         pg.display.flip()
 
     # Behandle Events
-    def handel_events(self):
+    def handel_events(self) -> None:
 
         # Gehe durch alle Events durch
         for event in pg.event.get():
@@ -84,50 +94,41 @@ class Application:
                 # Setze Running auf Falsch
                 self.running = False
 
-    # Aktualisiere Frame
-    def update_frame(self):
+            # Wenn eine Taste gedrückt wurde
+            if event.type == pg.KEYDOWN:
+
+                # Wenn die gedrückte Taste ESC ist
+                if event.key == pg.K_ESCAPE:
+
+                    # Setze Running auf Falsch
+                    self.running = False
+
+    # Aktualisiere Kamera Frame
+    def update_cam_frame(self) -> None:
 
         # Hole aktuellen Frame
         _, self.frame = self.video_cap.read()
 
         # Lade Qr Codes
-        self.load_qr_codes()
+        utils.load_qr_codes(app)
+
+        # Skaliere Frame auf 0.8
+        self.frame = utils.resize_img(self.frame, 0.8)
 
         # Konvertiere OpenCV Bild zu Pygame Bild
-        self.pg_frame = pg.image.frombuffer(self.frame.tobytes(), self.frame.shape[1::-1], "BGR")
-
-    # Lade Qr Codes
-    def load_qr_codes(self):
-
-        # Endcode Frame
-        self.qr_codes = pyzbar.decode(self.frame, [pyzbar.ZBarSymbol.QRCODE])
-
-        # Gehe durch jeden Qr Code durch
-        for code in self.qr_codes:
-
-            # Hole Position und Größe des Qr Codes
-            x_pos, y_pos, width, height = code.rect
-
-            # Zeichne roten Rahmen um Qr Code
-            cv.rectangle(self.frame, (x_pos, y_pos), (x_pos + width, y_pos + height), (0, 0, 255), 2)
-
-            # Endcode den Inhalt des Qr Codes
-            data = code.data.decode("utf-8")
-
-            # Schreibe den Inhalt in grün über den Qr Code
-            cv.putText(self.frame, data, (x_pos, y_pos - 5), cv.QT_FONT_NORMAL, 0.4, (0, 255, 0), 1)
+        self.pg_frame = pg.image.frombuffer(self.frame.tobytes(), (self.frame.shape[1], self.frame.shape[0]), "BGR")
 
     # Aktualisiere Fenster Größe
-    def update_window_size(self):
+    def update_window_size(self) -> None:
 
         # Hole Größe
         self.width, self.height = pg.display.get_window_size()
 
         # Kontrolliere, ob die Größe zu klein ist
-        if self.width < self.pg_frame.get_width():
-            self.width = self.pg_frame.get_width()
-        if self.height < self.pg_frame.get_height():
-            self.height = self.pg_frame.get_height()
+        if self.width < self.min_width:
+            self.width = self.min_width
+        if self.height < self.min_height:
+            self.height = self.min_height
 
         # Setze die neue Größe auf das Fenster
         self.screen = pg.display.set_mode((self.width, self.height), pg.RESIZABLE)
