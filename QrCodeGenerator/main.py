@@ -52,7 +52,7 @@ if __name__ == '__main__':
     else: output_path = r"./QrCodes/"
 
     # Set the Default Qr Code Scale
-    qr_code_scale = 4
+    qr_code_scale = 2
 
     # Print Welcome Message
     print("\nQr Code Generator\n----------------\n\nCreated for the MAKER SPACE Project:\n'Race Video Analyse'\n\nAuthor: Nikocraft, Magnus\nVersion: Beta 1.1\n\n")
