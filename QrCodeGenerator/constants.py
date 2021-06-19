@@ -1,3 +1,5 @@
+# DEFINE VARIABLES
+
 # Systems
 S_WINDOWS = 0
 S_MACOS = 1

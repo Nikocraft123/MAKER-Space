@@ -2,6 +2,7 @@
 from pyzbar import pyzbar
 import cv2 as cv
 import pygame as pg
+import color
 
 
 # CLASSES
@@ -42,31 +43,58 @@ class Application:
         while self.running:
 
             # Aktualisiere Frame
-            _, self.frame = self.video_cap.read()
-
-            # Lade Qr Codes
-            self.load_qr_codes()
-
-            # Konvertiere OpenCV Bild zu Pygame Bild
-            self.pg_frame = pg.image.frombuffer(self.frame.tobytes(), self.frame.shape[1::-1], "BGR")
+            self.update_frame()
 
             # Aktualisiere Fenster Größe
             self.update_window_size()
 
-            # Zeichne Frame auf dem Fenster (In der Mitte)
-            self.screen.blit(self.pg_frame, ((self.screen.get_width() - self.pg_frame.get_width()) // 2, (self.screen.get_height() - self.pg_frame.get_height()) // 2))
+            # Aktualisiere Fenster Inhalt
+            self.update_screen()
 
-            # Aktualisiere Fenster
-            pg.display.flip()
+            # Behandle Events
+            self.handel_events()
 
-            # Schaue, ob das Fenster geschlossen worden ist
-            if pg.event.get(pg.QUIT):
+        # Löse das Kamerasignal
+        self.video_cap.release()
+
+        # Beende Pygame
+        pg.quit()
+
+    # Aktualisiere Fenster Inhalt
+    def update_screen(self):
+
+        # Setze den Hintergrund auf Türkis
+        self.screen.fill(color.AQUA)
+
+        # Zeichne Frame auf dem Fenster (In der Mitte)
+        self.screen.blit(self.pg_frame, ((self.screen.get_width() - self.pg_frame.get_width()) // 2, (self.screen.get_height() - self.pg_frame.get_height()) // 2))
+
+        # Aktualisiere Fenster
+        pg.display.flip()
+
+    # Behandle Events
+    def handel_events(self):
+
+        # Gehe durch alle Events durch
+        for event in pg.event.get():
+
+            # Wenn das Fenster schließen Event gefunden wurde
+            if event.type == pg.QUIT:
 
                 # Setze Running auf Falsch
                 self.running = False
 
-        # Löse das Kamerasignal
-        self.video_cap.release()
+    # Aktualisiere Frame
+    def update_frame(self):
+
+        # Hole aktuellen Frame
+        _, self.frame = self.video_cap.read()
+
+        # Lade Qr Codes
+        self.load_qr_codes()
+
+        # Konvertiere OpenCV Bild zu Pygame Bild
+        self.pg_frame = pg.image.frombuffer(self.frame.tobytes(), self.frame.shape[1::-1], "BGR")
 
     # Lade Qr Codes
     def load_qr_codes(self):
