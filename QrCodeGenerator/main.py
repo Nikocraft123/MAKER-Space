@@ -12,6 +12,7 @@ def create_qrcode(data: str) -> qr.QRCode:
     # Return Qr Code
     return qr.create(data)
 
+
 # Get User Input
 def get_input(message: str, options: tuple) -> str:
 
@@ -20,7 +21,7 @@ def get_input(message: str, options: tuple) -> str:
 
     # Build Options
     option_str = "["
-    if (len(options) == 0):
+    if len(options) == 0:
         option_str += "Alles]"
     else:
         for option, value in enumerate(options):
