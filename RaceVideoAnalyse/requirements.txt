@@ -1,2 +1,2 @@
-PyQRCode==1.2.1
+pyzbar==0.1.8
 opencv_python==4.5.1.48
