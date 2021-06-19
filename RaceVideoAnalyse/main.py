@@ -27,7 +27,7 @@ def run():
             # Hole Position und Größe des Qr Code
             x_pos, y_pos, width, height = code.rect
 
-
+            # 
 
         # Zeige Video in einem Fenster
         cv2.imshow("MAKER Space - Race Video Analyse", frame)
