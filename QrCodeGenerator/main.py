@@ -53,7 +53,7 @@ if __name__ == '__main__':
     else: output_path = r"./QrCodes/"
 
     # Set the Default Qr Code Scale
-    qr_code_scale = 2
+    qr_code_scale = 10
 
     # Print Welcome Message
     print("\nQr Code Generator\n----------------\n\nCreated for the MAKER SPACE Project:\n'Race Video Analyse'\n\nAuthor: Nikocraft, Magnus\nVersion: Beta 1.1\n\n")
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
                 # Save Qr Code
                 print("Save Qr Code ...")
-                qr_code.png(file, qr_code_scale)
+                qr_code.png(file, qr_code_scale, quiet_zone=1)
 
             # Print Completed Message
             print(f"\nQr Code saved completed at file '{output_path}{user_input}'!\n")

@@ -27,6 +27,7 @@ class Application:
 
         # Definiere Kamerasignal
         self.video_cap = cv.VideoCapture(0, cv.CAP_DSHOW)
+        #self.video_cap = cv.VideoCapture("https://192.168.178.26:8080/video")
 
         # Initialisiere Pygame
         pg.init()
@@ -109,11 +110,17 @@ class Application:
         # Hole aktuellen Frame
         _, self.frame = self.video_cap.read()
 
-        # Lade Qr Codes
-        utils.load_qr_codes(app)
+        # Wenn der aktuelle Frame None ist, beende das Programm
+        if self.frame is None:
+            self.running = False
+            return
 
         # Skaliere Frame auf 0.8
-        self.frame = utils.resize_img(self.frame, 0.8)
+        #self.frame = utils.resize_img(self.frame, 0.8)
+        self.frame = utils.resize_img(self.frame, 0.4)
+
+        # Lade Qr Codes
+        utils.load_qr_codes(app)
 
         # Konvertiere OpenCV Bild zu Pygame Bild
         self.pg_frame = pg.image.frombuffer(self.frame.tobytes(), (self.frame.shape[1], self.frame.shape[0]), "BGR")
